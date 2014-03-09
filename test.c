@@ -61,16 +61,17 @@ stp_print_define(data_t, 6) {
     stp_print_field_int(data_int);
     stp_print_field_struct(sub,sub_t);
     stp_print_field_char(c);
-    stp_print_field_ptr(addr,void);
+    stp_print_field_ptr(addr,void*);
     stp_print_field_any(e,enum_t,print_enum_t);
     stp_print_field_pchar(text);
     stp_print_end();
 } 
 
-void print_data(data_t* ptr)
+void print_data(data_t* ptr, int level)
 {
     char msg[1024];
-    stp_snprintf(data_t,msg,sizeof(msg),ptr,"data");
+    printf("----\n");
+    stp_snprintf(data_t,msg,sizeof(msg),ptr,"data", level);
     printf("%s",msg);
 }
 
@@ -89,6 +90,7 @@ int main()
         },
         .text = "hogehoge" 
     };
-    print_data(&d);
+    print_data(&d, 0);
+    print_data(&d, 2);
     return 0;
 }

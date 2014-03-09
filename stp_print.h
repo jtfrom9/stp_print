@@ -51,15 +51,16 @@ typedef struct {
 
 extern int stp_do_print(stp_print_context_t* ctx, int level);
 extern int stp_do_print_pchar_val(char* buf, int bufsize, int v);
+extern int stp_do_print_ptr(char* buf, int bufsize, int v);
 
 #define DEFAULT_MAX_NAME_COLUMN_WIDTH (24)
 
-#define stp_snprintf(type, buf, buf_total_size, data, data_name)    \
-    stp_print_ ## type(buf,                                         \
-                       buf_total_size,                              \
-                       data,                                        \
-                       data_name,                                   \
-                       0,                                           \
+#define stp_snprintf(type, buf, buf_total_size, data, data_name,level)  \
+    stp_print_ ## type(buf,                                             \
+                       buf_total_size,                                  \
+                       data,                                            \
+                       data_name,                                       \
+                       level,                                           \
                        DEFAULT_MAX_NAME_COLUMN_WIDTH)
 
 #define stp_print_define(TYPE, NUM_FIELD)                           \
@@ -104,14 +105,6 @@ extern int stp_do_print_pchar_val(char* buf, int bufsize, int v);
 #define stp_print_field_uint(FIELD) stp_print_field(FIELD,int,"%0u")
 #define stp_print_field_char(FIELD) stp_print_field(FIELD,char,"\'%c\'")
 
-#define stp_print_field_ptr(FIELD,KIND)                                 \
-    if(ctx->index < ctx->num_field) {                                   \
-        ctx->table[ctx->index].type = stp_ptr;                          \
-        ctx->table[ctx->index].v.v_ptr = (void*)((data_ptr)->FIELD);    \
-        ctx->table[ctx->index].format = "%p";                           \
-        ctx->table[ctx->index].type_name = #KIND "*";                   \
-        stp_print_field_next(FIELD) }
-
 #define stp_print_field_any(FIELD,KIND,FUNC)                            \
     if(ctx->index < ctx->num_field) {                                   \
         ctx->table[ctx->index].type = stp_any;                          \
@@ -120,8 +113,12 @@ extern int stp_do_print_pchar_val(char* buf, int bufsize, int v);
         ctx->table[ctx->index].type_name = #KIND;                       \
         stp_print_field_next(FIELD) }
 
-#define stp_print_field_pchar(FIELD) stp_print_field_any(FIELD,char*,stp_do_print_pchar_val);
-    
+#define stp_print_field_pchar(FIELD) \
+    stp_print_field_any(FIELD,char*,stp_do_print_pchar_val)
+
+#define stp_print_field_ptr(FIELD,KIND) \
+    stp_print_field_any(FIELD,KIND,stp_do_print_ptr)
+
 #define stp_print_field_struct(FIELD,DATA_TYPE)                         \
     if(ctx->index < ctx->num_field) {                                   \
         ctx->table[ctx->index].type = stp_struct;                       \

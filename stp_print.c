@@ -138,3 +138,8 @@ int stp_do_print_pchar_val(char* buf, int bufsize, int v)
 {
     return snprintf(buf,bufsize,"\"%s\"",(char*)v);
 }
+
+int stp_do_print_ptr(char* buf, int bufsize, int v)
+{
+    return snprintf(buf,bufsize, "%p", (void*)v);
+}
