@@ -1,11 +1,11 @@
 #include <stdio.h>
-
 #include "stp_print.h"
 
 typedef enum {
     A = 1 << 0,
     B = 1 << 1,
     C = 1 << 2,
+    D = 1 << 3,
 } enum_t;
 
 typedef struct {
@@ -43,43 +43,52 @@ int print_enum_t(char* buf, int bufsize, int v)
     push_str(msg,(e&A),"A",&flag);
     push_str(msg,(e&B),"B",&flag);
     push_str(msg,(e&C),"C",&flag);
+    push_str(msg,(e&D),"D",&flag);
     sprintf(msg, "%s }",msg);
 
     return snprintf(buf,bufsize,"%s",msg);
 }
 
-st_print_define(sub_t, 4) {
-    st_print_field_int(sub_dat1);
-    st_print_field_uint(sub_dat2);
-    st_print_field_int(sub_dat3);
-    st_print_field(sub_dat2,int,"0x%x");
-    st_print_end();
+stp_print_define(sub_t, 4) {
+    stp_print_field_int(sub_dat1);
+    stp_print_field_uint(sub_dat2);
+    stp_print_field_int(sub_dat3);
+    stp_print_field(sub_dat2,int,"0x%x");
+    stp_print_end();
 }
 
-st_print_define(data_t, 6) {
-    st_print_field_int(data_int);
-    st_print_field_struct(sub,sub_t);
-    st_print_field_char(c);
-    st_print_field_ptr(addr,void);
-    st_print_field_any(e,enum_t,print_enum_t);
-    st_print_field_pchar(text);
-    st_print_end();
+stp_print_define(data_t, 6) {
+    stp_print_field_int(data_int);
+    stp_print_field_struct(sub,sub_t);
+    stp_print_field_char(c);
+    stp_print_field_ptr(addr,void);
+    stp_print_field_any(e,enum_t,print_enum_t);
+    stp_print_field_pchar(text);
+    stp_print_end();
 } 
 
-void dump_data(data_t* ptr)
+void print_data(data_t* ptr)
 {
     char msg[1024];
-    st_print(data_t,msg,sizeof(msg),ptr,"data");
+    stp_snprintf(data_t,msg,sizeof(msg),ptr,"data");
     printf("%s",msg);
 }
 
 int main()
 {
     int hoge;
-    data_t d = { 1, 'x' , &hoge, A|C,
-                 { 123, -1, 0xa },
-                 "hogehoge" };
-
-    dump_data(&d);
+    data_t d = {
+        .data_int = 1, 
+        .c        = 'x',
+        .addr     = &hoge,
+        .e        = A|C|D,
+        .sub = { 
+            .sub_dat1 = 123,
+            .sub_dat2 = -1,
+            .sub_dat3 = 0xa,
+        },
+        .text = "hogehoge" 
+    };
+    print_data(&d);
     return 0;
 }

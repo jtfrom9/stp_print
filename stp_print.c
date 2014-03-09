@@ -8,10 +8,10 @@
         ctx->buf+=bytes;                        \
         ctx->buf_size -= bytes; }
 
-static char* indent_level(char* buf,
-                          int buf_size,
-                          const char* msg,
-                          int level)
+static char* indent(char* buf,
+                    int buf_size,
+                    const char* msg,
+                    int level)
 {
     memset(buf,0,buf_size);
     for(int i=0; i<level; i++) {
@@ -21,10 +21,10 @@ static char* indent_level(char* buf,
     return buf;
 }
 
-static int do_print_field(st_print_context_t* ctx,
-                          st_print_table_t* table,
-                          int level,
-                          const char* line_fmt)
+static int print_value_field(stp_print_context_t* ctx,
+                             stp_print_table_t* table,
+                             int level,
+                             const char* line_fmt)
 {
     int bytes = 0;
     char valbuf[32];
@@ -60,9 +60,9 @@ static int do_print_field(st_print_context_t* ctx,
                      ctx->buf_size,
                      line_fmt,
                      // name
-                     indent_level(name_col, sizeof(name_col),
-                                  table->name, 
-                                  level),
+                     indent(name_col, sizeof(name_col),
+                            table->name, 
+                            level),
                      // type
                      table->type_name,
                      // value
@@ -72,9 +72,9 @@ static int do_print_field(st_print_context_t* ctx,
     return bytes;
 }
 
-static int do_print_struct_field(st_print_context_t* ctx,
-                                 st_print_table_t* table,
-                                 int level)
+static int print_struct_field(stp_print_context_t* ctx,
+                              stp_print_table_t* table,
+                              int level)
 {
     int bytes = 0;
     bytes = table->v.v_struct.func(ctx->buf,
@@ -87,9 +87,9 @@ static int do_print_struct_field(st_print_context_t* ctx,
     return bytes;
 }
 
-static int do_print_top(st_print_context_t* ctx, 
-                         int level,
-                         const char* line_fmt)
+static int print_top(stp_print_context_t* ctx, 
+                     int level,
+                     const char* line_fmt)
 {
     int bytes;
     char namebuf[16];
@@ -97,14 +97,14 @@ static int do_print_top(st_print_context_t* ctx,
     sprintf(valbuf,"(%p)",ctx->data);
     bytes = snprintf(ctx->buf, ctx->buf_size,
                      line_fmt,
-                     indent_level(namebuf,sizeof(namebuf),ctx->data_name,level),
+                     indent(namebuf,sizeof(namebuf),ctx->data_name,level),
                      ctx->data_type_name,
                      valbuf);
     update_ctx(ctx,bytes);
     return bytes;
 }
 
-int st_do_print(st_print_context_t* ctx, int level)
+int stp_do_print(stp_print_context_t* ctx, int level)
 {
     char line_fmt[32];
     int bytes = 0;
@@ -117,26 +117,24 @@ int st_do_print(st_print_context_t* ctx, int level)
              "%%-%0ds  %%-12s  %%-s\n",
              ctx->max_name_colum_width);
     
-    bytes += do_print_top(ctx,level,line_fmt);
+    bytes += print_top(ctx,level,line_fmt);
     for(int i=0; i<ctx->num_field; i++) {
         if(ctx->table[i].type!=stp_struct) {
-            n = do_print_field(ctx,
-                               &ctx->table[i],
-                               level+1,
-                               line_fmt);
+            n = print_value_field(ctx,
+                                  &ctx->table[i],
+                                  level+1,
+                                  line_fmt);
         } else {
-            n = do_print_struct_field(ctx,
-                                      &ctx->table[i],
-                                      level+1);
+            n = print_struct_field(ctx,
+                                   &ctx->table[i],
+                                   level+1);
         }
         bytes += n;
     }
     return bytes;
 }
 
-int st_do_print_pchar_val(char* buf, int bufsize, int v)
+int stp_do_print_pchar_val(char* buf, int bufsize, int v)
 {
     return snprintf(buf,bufsize,"\"%s\"",(char*)v);
 }
-
-
