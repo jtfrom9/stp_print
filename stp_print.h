@@ -46,7 +46,7 @@ extern int stp_do_print_int(char* buf, int buf_size, void* ptr, char* fmt);
 extern int stp_do_print_short(char* buf, int buf_size, void* ptr, char* fmt);
 extern int stp_do_print_char(char* buf, int buf_size, void* ptr, char* fmt);
 
-extern int stp_do_print_pchar_val(char* buf, int buf_size, void* ptr, char* fmt);
+extern int stp_do_print_string(char* buf, int buf_size, void* ptr, char* fmt);
 extern int stp_do_print_ptr(char* buf, int buf_size, void* ptr, char* fmt);
 
 
@@ -107,11 +107,10 @@ extern int stp_do_print_ptr(char* buf, int buf_size, void* ptr, char* fmt);
 
 #define stp_print_field_charf(FIELD,FMT) stp_print_field_value(FIELD,int8_t,stp_do_print_char,FMT)
 #define stp_print_field_char(FIELD) stp_print_field_value(FIELD,int8_t,stp_do_print_char,"\'%c\'")
-#define stp_print_field_ucharf(FIELD) stp_print_field_value(FIELD,uint8_t,stp_do_print_char,FMT)
+#define stp_print_field_ucharf(FIELD,FMT) stp_print_field_value(FIELD,uint8_t,stp_do_print_char,FMT)
 #define stp_print_field_uchar(FIELD) stp_print_field_value(FIELD,uint8_t,stp_do_print_char,"%02x")
 
-#define stp_print_field_pchar(FIELD)                                \
-    stp_print_field_value(FIELD,char*,stp_do_print_pchar_val,NULL)
+#define stp_print_field_string(FIELD) stp_print_field_value(FIELD,char*,stp_do_print_string,NULL)
 
 #define stp_print_field_ptr(FIELD,KIND)                     \
     stp_print_field_value(FIELD,KIND,stp_do_print_ptr,NULL)

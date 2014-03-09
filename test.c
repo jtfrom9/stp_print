@@ -57,7 +57,7 @@ int print_enum_t(char* buf, int buf_size, void* ptr, char* fmt)
 }
 
 stp_print_begin(sub2_t, 1) {
-    stp_print_field_pchar(msg);
+    stp_print_field_string(msg);
     stp_print_end();
 }
 
@@ -76,7 +76,7 @@ stp_print_begin(data_t, 7) {
     stp_print_field_char(c);
     stp_print_field_ptr(addr,void*);
     stp_print_field_any(e,enum_t,print_enum_t);
-    stp_print_field_pchar(text);
+    stp_print_field_string(text);
     stp_print_field_structp(psub,sub_t);
     stp_print_end();
 } 

@@ -131,7 +131,7 @@ int stp_do_print_char(char* buf, int buf_size, void* ptr, char* fmt)
     return snprintf(buf,buf_size,fmt,*((char*)ptr));
 }
 
-int stp_do_print_pchar_val(char* buf, int buf_size, void* ptr, char* fmt)
+int stp_do_print_string(char* buf, int buf_size, void* ptr, char* fmt)
 {
     return snprintf(buf,buf_size,"\"%s\"",*((char**)ptr));
 }
